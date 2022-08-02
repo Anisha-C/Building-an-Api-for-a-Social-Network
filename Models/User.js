@@ -1,7 +1,7 @@
-const { Schema, Types } = require("mongoose")
-const reactionSchema = require("./Reaction")
+const { Schema, model } = require("mongoose")
 
-const userSchema = ({
+
+const userSchema = new Schema({
     username: {
         type: String,
         required: true,
@@ -13,7 +13,7 @@ const userSchema = ({
         type: String,
         required: true,
         unique: true,
-        match: [/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/, "Must match an email address!"]
+        match: [/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/i, "Must match an email address!"]
     },
     thoughts: [
         {
@@ -29,10 +29,18 @@ const userSchema = ({
         ],
 
 
-})
+},
+    {
+        toJSON: {
+            virtuals: true,
+            getters: true
+        },
+
+        id: false
+    })
 
 userSchema.virtual("friend-count").get(function () {
-    return this.friends.length()
+    return this.friends.length
 })
 
 const User = model("User", userSchema)
